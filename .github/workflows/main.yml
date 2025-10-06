@@ -1,0 +1,29 @@
+name: Databricks CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-to-prod:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Databricks CLI
+        run: |
+          pip install databricks-cli
+
+      - name: Configure Databricks CLI
+        run: |
+          databricks configure --token <<EOF
+          ${{ secrets.DATABRICKS_HOST }}
+          ${{ secrets.DATABRICKS_TOKEN }}
+          EOF
+
+      - name: Deploy to Production
+        run: |
+          databricks workspace import_dir /Users/hariharan.karuppusamy@hexacorp.com/databricks-dev /Users/hariharan.karuppusamy@hexacorp.com/databricks-prod --overwrite
